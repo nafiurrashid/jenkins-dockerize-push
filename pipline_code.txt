@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        
+        //clone the repo
+        stage('Git Clone') {
+            steps {
+                // Clone the Git repository
+                git branch: 'master', url: 'https://github.com/zuhebahmed88091/blog_django_project.git'
+            }
+        }
+        //
+        stage('create docker image') {
+            steps {
+                  script {
+                // 
+                docker.build("nafiur30080/blog:${env.BUILD_ID}")
+                  }
+                
+            }
+        }
+        
+        stage('push to docker') {
+            steps {
+                  script {
+                 withDockerRegistry(credentialsId: 'dockerhub') {
+                def imageName = "nafiur30080/blog:${env.BUILD_NUMBER}"
+                docker.image(imageName).push()
+                  }
+                
+            }
+        }
+        
+        }
+        
+  
+        
+        
+        
+   }     
+}  
